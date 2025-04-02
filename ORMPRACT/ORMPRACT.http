@@ -1,0 +1,6 @@
+@ORMPRACT_HostAddress = http://localhost:5255
+
+GET {{ORMPRACT_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
