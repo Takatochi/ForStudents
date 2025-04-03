@@ -59,4 +59,30 @@ public class UserRepository (AppDbContext dbContext) : IUserRepository
         dbContext.Users.Remove(user);
         await dbContext.SaveChangesAsync();
     }
+    
+    // Вразливий SQL-запит: введене користувачем значення напряму вставляється в рядок SQL-запиту,
+    // що відкриває можливість для SQL-ін'єкції. Pass ' OR '1'='1
+    public User Login(string password)
+    {
+        //Користувач може передати шкідливий SQL-код, в password = Pass ' OR '1'='1
+        string query = "SELECT * FROM users WHERE password_hash = '" + password + "'";
+        Console.WriteLine("Executing SQL: " + query); // Логування SQL-запиту (ще один небезпечний момент)
+        return dbContext.Users.FromSqlRaw(query).FirstOrDefault();
+
+    }
+    //Цей варіант використовує FromSqlInterpolated, який автоматично підставляє параметри безпечним способом
+    public User LoginSQL(string password)
+    {
+        return dbContext.Users
+            .FromSqlInterpolated($"SELECT * FROM users WHERE password_hash = {password}")
+            .FirstOrDefault();
+    }
+    //Рекомендується уникати FromSqlRaw, якщо можна зробити запит через LINQ
+    public User LoginORM(string password)
+    {
+        return dbContext.Users
+            .Where(u => u.PasswordHash == password)
+            .FirstOrDefault();
+    }
+    
 }

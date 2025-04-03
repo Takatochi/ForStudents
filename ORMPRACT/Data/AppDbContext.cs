@@ -23,6 +23,8 @@ namespace ORMPRACT.Data{
                     entity.HasKey(e => e.Id);
                     entity.HasIndex(u => u.Username).IsUnique();
                     entity.HasIndex(u => u.Email).IsUnique();
+                    entity.Property(e => e.PasswordHash)
+                        .HasColumnName("password_hash");
                     // entity.Property(u => u.CreatedAt)
                     //     .HasConversion(
                     //         v => v.ToUniversalTime(), // Перетворюємо в UTC перед збереженням
